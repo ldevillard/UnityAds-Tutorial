@@ -21,6 +21,8 @@ public class UIManager : MonoBehaviour
     public Text GameOverScoreText;
     public Text GameOverHighScoreText;
 
+    public Button ReviveButton;
+
     void Awake()
     {
         Instance = this;
@@ -37,16 +39,22 @@ public class UIManager : MonoBehaviour
 
         GameOver.gameObject.SetActive(false);
         Gameplay.gameObject.SetActive(false);
+
+        ReviveButton.onClick.AddListener(MonetizationManager.Instance.ShowRewarded);
     }
 
     void OnDestroy()
     {
         GameManager.OnGameStarted -= OnGameStarted;
         GameManager.OnGameEnded -= OnGameEnded;
+
+        ReviveButton.onClick.RemoveAllListeners();
     }
 
     void OnGameStarted()
     {
+        ScoreText.text = ScoreManager.Instance.score.ToString();
+
         MainMenu.DOFade(0, 0.2f)
         .OnComplete(() => MainMenu.gameObject.SetActive(false));
         Gameplay.gameObject.SetActive(true);
@@ -55,7 +63,11 @@ public class UIManager : MonoBehaviour
 
     void OnGameEnded()
     {
-        Gameplay.DOFade(0, 0.2f).OnComplete(() => Gameplay.gameObject.SetActive(false));
+        Gameplay.DOFade(0, 0.2f).OnComplete(() =>
+        {
+            MonetizationManager.Instance.ShowInterstitial();
+            Gameplay.gameObject.SetActive(false);
+        });
         GameOver.gameObject.SetActive(true);
         GameOverScoreText.text = ScoreManager.Instance.score.ToString();
         GameOverHighScoreText.text = ScoreManager.Instance.highScore.ToString();

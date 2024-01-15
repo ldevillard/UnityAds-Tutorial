@@ -16,7 +16,16 @@ public class ScoreManager : MonoBehaviour
 
     void Start()
     {
-        score = 0;
+        //Handle rewarded ad system
+        if (PlayerPrefs.HasKey("Score"))
+        {
+            score = PlayerPrefs.GetInt("Score");
+            //then delete the key to reset the reward
+            PlayerPrefs.DeleteKey("Score");
+        }
+        else 
+            score = 0;
+
         if (PlayerPrefs.HasKey("HighScore"))
             highScore = PlayerPrefs.GetInt("HighScore");
         else
